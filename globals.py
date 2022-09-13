@@ -1,0 +1,1 @@
+RESOURCE_TILES = ['brick']*3 + ['grain']*4 + ['lumber']*4 + ['ore']*3 + ['wool']*4 +['desert']
