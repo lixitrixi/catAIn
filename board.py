@@ -1,36 +1,73 @@
-from platform import node
 from globals import *
 from node import *
+from player import *
 import random
 
 class Board:
-    nodes = []
-    def create_nodes(self):
-        for i in range(1, 55):
-            self.nodes.append(Node())
+    '''
+    Contains board-related objects and methods
 
-    def populate_neighbours(self):
-        for i in range(1,55):
-            self.nodes[i-1].neighbours = NEIGHBOUR_TABLE[i]
+    DO NOT USE THIS CLASS FOR INTERFACING WITH THE GAME, USE :obj:`Game` METHODS INSTEAD
+    '''
+    def __init__(self, players=[]):
+        '''
+        players: a list of player objects, used for speeding up certain calcs
+        '''
+        self.players = players
+        self.nodes = [Node() for _ in range(54)] # initially empty nodes, connections are set up in init_nodes
+        self.init_nodes()
+        self.init_tiles()
 
-    def place_tiles(self):
+    def init_nodes(self):
+        '''
+        populate :attr:`node.neighbours` and :attr:`node.road_connections`
+        '''
+        for i in range(54):
+            self.nodes[i].neighbours = NEIGHBOUR_NODES[i]
+            self.nodes[i].road_connections = {p: [] for p in self.players} # initialize empty dict items for speed
+
+    def init_tiles(self):
+        '''
+        Assign hex tile locations and assign nodes the relevant resource mappings
+        '''
         tiles_remaining = RESOURCE_TILES.copy()
         tokens_remaining = NUMBER_TOKENS.copy()
         random.shuffle(tiles_remaining)
         random.shuffle(tokens_remaining)
-        for i in range(1,20):
+        for i in range(19):
             current_tile = tiles_remaining.pop()
-            current_token = tokens_remaining.pop()
-            for node_ref in HEX_TILES[i]:
-                
-                if current_token not in self.nodes[node_ref-1].resources:
-                    self.nodes[node_ref-1].resources[current_token] = [current_tile]
-                else:
-                    self.nodes[node_ref-1].resources[current_token].append(current_tile) 
+            if current_tile == 'desert': continue
 
-    def __init__(self):
-        self.create_nodes()
-        self.populate_neighbours()
-        self.place_tiles()
+            current_token = tokens_remaining.pop()
+            for node_id in HEX_POINTS[i]:
+                current_node = self.nodes[node_id]
+                
+                if current_token not in current_node.resources:
+                    current_node.resources[current_token] = []
+                current_node.resources[current_token].append(current_tile)
+
+    def place_road(self, player:Player, nodeA:Node, nodeB:Node):
+        '''
+        Links two nodes together using their :attr:`road_connection` attribute
+        '''
+        nodeA.road_connections[player].append(nodeB)
+        nodeB.road_connections[player].append(nodeA)
+    
+    def max_road_length(self, node_id:int, player:Player):
+        '''
+        Wrapper method for :meth:`flood_search`
+        Returns the maximum road length owned by a player
+
+        node_id: the ID of the node to start the search at
+        player: the player object being checked
+        '''
+        res = self.flood_search(self.nodes[node_id], [], 0)
+
+    @staticmethod
+    def flood_search(node:Node, visited:list[Node], n:int):
+        '''
+        Recursively searches along node connections
+        '''
+        ...
 
 Board()
