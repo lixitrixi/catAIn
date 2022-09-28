@@ -1,7 +1,9 @@
+import random
+
 from globals import *
 from node import *
 from player import *
-import random
+
 
 class Board:
     '''
@@ -14,7 +16,6 @@ class Board:
         players: a list of player objects, used for speeding up certain calcs
         '''
         self.players = players
-        self.nodes = [Node() for _ in range(54)] # initially empty nodes, connections are set up in init_nodes
         self.init_nodes()
         self.init_tiles()
 
@@ -22,8 +23,9 @@ class Board:
         '''
         populate :attr:`node.neighbours` and :attr:`node.road_connections`
         '''
+        self.nodes = [Node() for _ in range(54)] # initially empty nodes, connections are set up in init_nodes
         for i in range(54):
-            self.nodes[i].neighbours = NEIGHBOUR_NODES[i]
+            self.nodes[i].neighbours = [self.nodes[n] for n in NEIGHBOUR_NODES[i]]
             self.nodes[i].road_connections = {p: [] for p in self.players} # initialize empty dict items for speed
 
     def init_tiles(self):
@@ -45,6 +47,13 @@ class Board:
                 if current_token not in current_node.resources:
                     current_node.resources[current_token] = []
                 current_node.resources[current_token].append(current_tile)
+    
+    def place_settlement(self, player:Player, node:Node):
+        node.player = player
+        node.structure = 1
+    
+    def place_city(self, player:Player, node:node):
+        node.structure = 2
 
     def place_road(self, player:Player, nodeA:Node, nodeB:Node):
         '''
@@ -55,10 +64,11 @@ class Board:
     
     def max_road_length(self, node_id:int, player:Player):
         '''
-        Wrapper method for :meth:`flood_search`
+        Wrapper method for :meth:`flood_search`.
         Returns the maximum road length owned by a player
 
         node_id: the ID of the node to start the search at
+
         player: the player object being checked
         '''
         res = self.flood_search(self.nodes[node_id], [], 0)

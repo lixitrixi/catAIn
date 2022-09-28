@@ -2,6 +2,11 @@ RESOURCE_TILES = ['brick']*3 + ['grain']*4 + ['lumber']*4 + ['ore']*3 + ['wool']
 
 NUMBER_TOKENS = [2]*1 + [3]*2 + [4]*2 + [5]*2 + [6]*2 + [8]*2 + [9]*2 + [10]*2 + [11]*2 + [12]*1
 
+ROAD_COST = {'brick':1, 'lumber':1}
+SETTLEMENT_COST = {'brick':1, 'grain':1, 'lumber':1, 'wool':1}
+CITY_COST = {'grain':3, 'ore':2}
+DEV_CARD_COST = {'grain':1, 'ore':1, 'wool':1}
+
 HEX_POINTS = { # links hex tiles (left-right, top-down) to their adjecent nodes
     0: [0, 3, 4, 7, 8, 12],
     1: [1, 4, 5, 8, 9, 13],

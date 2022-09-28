@@ -6,7 +6,7 @@ class Node:
         self.structure = 0
         self.neighbours = []
         self.resources = dict()
-        self.road_connections = dict()
+        self.road_connections = dict
 
     def allot(self, num:int) -> None:
         '''

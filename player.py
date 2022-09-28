@@ -14,6 +14,9 @@ class Player:
     def change_vp(self, p) -> bool:
         self.vp += p
         return self.vp >= 10
+    
+    def has_resources(self):
+        ...
 
 class NonePlayer(Player):
     ...
